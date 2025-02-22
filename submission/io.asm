@@ -1,18 +1,18 @@
 START SC IO ; Inicia a subrotina IO
-END   HM \0 ; Halt Machine
+END   HM /0 ; Halt Machine
 
-IO    HM \0 ; Subrotina IO
+IO    HM /0 ; Subrotina IO
 
       ; Leitura de dados
-      GD \0      ; Armazena o valor lido no AC
+      GD /0      ; Armazena o valor lido no AC
       MM x1      ; Armazena x-d1 em x1
-      GD \0      ; Armazena o valor lido no AC
+      GD /0      ; Armazena o valor lido no AC
       MM x2      ; Armazena x-d1 em x2
-      GD \0      ; Descarta s
-      GD \0      ; Descarta s
-      GD \0      ; Armazena o valor lido no AC
+      GD /0      ; Descarta s
+      GD /0      ; Descarta s
+      GD /0      ; Armazena o valor lido no AC
       MM y1      ; Armazena x-d1 em y1
-      GD \0      ; Armazena o valor lido no AC
+      GD /0      ; Armazena o valor lido no AC
       MM y2      ; Armazena x-d1 em y2 
 
       ; Tratamento da Leitura
@@ -48,16 +48,18 @@ IO    HM \0 ; Subrotina IO
       JP OUTPUT  ; Vai para a saida
 
       ; No carry
-      CARRY AD A ; Readiciona A no AC
-      MM z2      ; Salva x2 + y2 - A + A em z2
-      JP OUTPUT  ; Vai para a saida
+      NOCARRY AD A ; Readiciona A no AC
+      MM z2        ; Salva x2 + y2 - A + A em z2
+      JP OUTPUT    ; Vai para a saida
 
       OUTPUT LD z1 ; Armazena z1 no AC
-      PD \0        ; Envia z1 para o monitor
+      PD /0        ; Envia z1 para o monitor
       RS IO ; Retorna a subrotina
 
 ; Dados
 ASCII K /3030 ; Constante 0x3030 para corrigir o valor de ASCII
+A     K /A    ; Constante A para verificar o carry
+UM    K /1    ; Constante 1
 x1    K /0    ; Primeiro digito de x
 x2    K /0    ; Segundo digito de x
 y1    K /0    ; Primeiro digito de y
