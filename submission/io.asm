@@ -1,68 +1,55 @@
 START SC IO ; Inicia a subrotina IO
 END   HM /0 ; Halt Machine
 
-IO    HM /0 ; Subrotina IO
-
-      ; Leitura de dados
-      GD /0      ; Armazena o valor lido no AC
-      MM x1      ; Armazena x-d1 em x1
-      GD /0      ; Armazena o valor lido no AC
-      MM x2      ; Armazena x-d1 em x2
-      GD /0      ; Descarta s
-      GD /0      ; Descarta s
-      GD /0      ; Armazena o valor lido no AC
-      MM y1      ; Armazena x-d1 em y1
-      GD /0      ; Armazena o valor lido no AC
-      MM y2      ; Armazena x-d1 em y2 
-
-      ; Tratamento da Leitura
-      LD x1      ; Armazena x1 no AC
-      SB ASCII   ; Subtrai 3030 de x1
-      MM x1      ; Salva x1 - 3030 em x1
-      LD x2      ; Armazena x2 no AC
-      SB ASCII   ; Subtrai 3030 de x2
-      MM x2      ; Salva x2 - 3030 em x2
-      LD y1      ; Armazena y1 no AC
-      SB ASCII   ; Subtrai 3030 de y1
-      MM y1      ; Salva y1 - 3030 em y1
-      LD y2      ; Armazena y2 no AC
-      SB ASCII   ; Subtrai 3030 de y2
-      MM y2      ; Salva y2 - 3030 em y2
-
-      ; Soma do mais significativo
-      LD x1      ; Armazena x1 no AC
-      AD y1      ; Soma y1 no AC
-      MM z1      ; Salva x1 + y1 em z1
-
-      ; Soma o menos significativo
-      LD x2      ; Armazena x2 no AC
-      AD y2      ; Soma y2 no AC
-      SB A       ; Subtrai A de x1 + x2
-      JN NOCARRY ; Se for negativo, vai para o caso sem carry
-
-      ; Carry
-      MM z2      ; Salva x2 + y2 em z2
-      LD z1      ; Armazena z1 no AC
-      AD UM      ; Soma 1 no AC
-      MM z1      ; Armazena z1 + 1 no AC
-      JP OUTPUT  ; Vai para a saida
-
-      ; No carry
-      NOCARRY AD A ; Readiciona A no AC
-      MM z2        ; Salva x2 + y2 - A + A em z2
-      JP OUTPUT    ; Vai para a saida
-
-      OUTPUT LD z1 ; Armazena z1 no AC
-      PD /100        ; Envia z1 para o monitor
-      RS IO ; Retorna a subrotina
+IO     HM /0 ; Subrotina IO
+ 
+       ; Leitura de dados
+       GD /0      ; Armazena o valor lido no AC
+       MM x       ; Armazena x em x
+       GD /0      ; Descarta s
+       GD /0      ; Armazena o valor lido no AC
+       MM y       ; Armazena y em y
+ 
+       ; Tratamento da Leitura
+       LD x       ; Armazena x no AC
+       SB ASCII   ; Subtrai 3030 de x
+       MM x       ; Salva x - 3030 em x
+       LD y       ; Armazena y no AC
+       SB ASCII   ; Subtrai 3030 de y
+       MM y       ; Salva y - 3030 em y
+ 
+       ; Algoritmo de Soma
+       LD x       ; Armazena x no AC
+       AD y       ; Soma y no AC
+       MM SUM     ; Salva a x _ y em SUM
+       DV SHIFT   ; Shifta x + y para a direita
+       ML SHIFT   ; Shifta x + y para a esquerda
+       MM AUX     ; Salva x + y sem o ultimo digito em AUX
+       LD SUM     ; Armazena SUM no AC
+       SB AUX     ; Subtrai AUX de SUM
+       SB A       ; Subtrai A de SUM - AUX
+       JN OUTPUT  ; Se o ultimo digito for menor que A, pula para OUTPUT
+ 
+       ; Algoritmo de carry
+       LD SUM     ; Armazena SUM no AC
+       SB A       ; Subtrai A do AC
+       AD DEZ     ; Soma 10 no AC
+       MM SUM     ; Salva SUM - A + 10 no AC
+       AD ASCII   ; Subtrai 3030 de SUM
+       MM SUM     ; Salva SUM - 3030 em SUM
+       JP OUTPUT  ; Pula para OUTPUT
+ 
+       ; Saida
+OUTPUT LD SUM ; Armazena SUM no AC
+       PD /100       ; Envia SUM para o Monitor
+       RS IO         ; Retorna a subrotina
 
 ; Dados
 ASCII K /3030 ; Constante 0x3030 para corrigir o valor de ASCII
+SHIFT K /100  ; Constante para shift
+DEZ   K /100   ; Constante para representar o vai-um
 A     K /A    ; Constante A para verificar o carry
-UM    K /1    ; Constante 1
-x1    K /0    ; Primeiro digito de x
-x2    K /0    ; Segundo digito de x
-y1    K /0    ; Primeiro digito de y
-y2    K /0    ; Segundo digito de y
-z1    K /0    ; Primeiro digito de z
-z2    K /0    ; Segundo digito de z2
+x     K /0    ; Variavel x
+y     K /0    ; Variavel y
+SUM   K /0    ; Variavel Soma
+AUX   K /0    ; Variavel para comparacao da soma
