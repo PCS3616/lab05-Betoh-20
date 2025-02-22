@@ -53,7 +53,7 @@ IO    HM /0 ; Subrotina IO
       JP OUTPUT    ; Vai para a saida
 
       OUTPUT LD z1 ; Armazena z1 no AC
-      PD /0        ; Envia z1 para o monitor
+      PD /100        ; Envia z1 para o monitor
       RS IO ; Retorna a subrotina
 
 ; Dados
